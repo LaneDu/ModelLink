@@ -14,6 +14,8 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,6 +61,12 @@ jobs:
 
       - name: Create ZIP
         run: zip -r ModelChange-macOS.zip ModelChange.app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ModelChange-macOS
+          path: ModelChange-macOS.zip
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
