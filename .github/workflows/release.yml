@@ -1,0 +1,70 @@
+name: Build macOS App
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Create app bundle
+        run: |
+          APP_NAME="ModelChange"
+          BUNDLE_DIR="${APP_NAME}.app"
+          mkdir -p "${BUNDLE_DIR}/Contents/MacOS"
+          cp target/release/claude-model-proxy "${BUNDLE_DIR}/Contents/MacOS/${APP_NAME}"
+          chmod +x "${BUNDLE_DIR}/Contents/MacOS/${APP_NAME}"
+          
+          cat > "${BUNDLE_DIR}/Contents/Info.plist" << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleName</key>
+            <string>ModelChange</string>
+            <key>CFBundleDisplayName</key>
+            <string>ModelChange</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.modelchange.app</string>
+            <key>CFBundleVersion</key>
+            <string>1.0.0</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1.0.0</string>
+            <key>CFBundleExecutable</key>
+            <string>ModelChange</string>
+            <key>LSMinimumSystemVersion</key>
+            <string>10.13</string>
+            <key>LSUIElement</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Create ZIP
+        run: zip -r ModelChange-macOS.zip ModelChange.app
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          name: ModelChange ${{ github.event.inputs.version || github.ref_name }}
+          files: ModelChange-macOS.zip
+          generate_release_notes: true
