@@ -51,6 +51,8 @@ jobs:
             <string>1.0.0</string>
             <key>CFBundleExecutable</key>
             <string>ModelChange</string>
+            <key>CFBundleIconFile</key>
+            <string>AppIcon</string>
             <key>LSMinimumSystemVersion</key>
             <string>10.13</string>
             <key>LSUIElement</key>
@@ -58,6 +60,36 @@ jobs:
           </dict>
           </plist>
           EOF
+
+      - name: Add app icon
+        run: |
+          APP_NAME="ModelChange"
+          BUNDLE_DIR="${APP_NAME}.app"
+          ICONSET="AppIcon.iconset"
+          mkdir -p "${BUNDLE_DIR}/Contents/Resources"
+          mkdir -p "${ICONSET}"
+
+          if [ -f "assets/icon.png" ]; then
+            ICON_SRC="assets/icon.png"
+          elif [ -f "icon.png" ]; then
+            ICON_SRC="icon.png"
+          else
+            echo "No icon.png found, skipping icon."
+            exit 0
+          fi
+
+          sips -z 16 16     "${ICON_SRC}" --out "${ICONSET}/icon_16x16.png"
+          sips -z 32 32     "${ICON_SRC}" --out "${ICONSET}/icon_16x16@2x.png"
+          sips -z 32 32     "${ICON_SRC}" --out "${ICONSET}/icon_32x32.png"
+          sips -z 64 64     "${ICON_SRC}" --out "${ICONSET}/icon_32x32@2x.png"
+          sips -z 128 128   "${ICON_SRC}" --out "${ICONSET}/icon_128x128.png"
+          sips -z 256 256   "${ICON_SRC}" --out "${ICONSET}/icon_128x128@2x.png"
+          sips -z 256 256   "${ICON_SRC}" --out "${ICONSET}/icon_256x256.png"
+          sips -z 512 512   "${ICON_SRC}" --out "${ICONSET}/icon_256x256@2x.png"
+          sips -z 512 512   "${ICON_SRC}" --out "${ICONSET}/icon_512x512.png"
+          sips -z 1024 1024 "${ICON_SRC}" --out "${ICONSET}/icon_512x512@2x.png"
+          iconutil -c icns "${ICONSET}" -o "${BUNDLE_DIR}/Contents/Resources/AppIcon.icns"
+          rm -rf "${ICONSET}"
 
       - name: Create ZIP
         run: zip -r ModelChange-macOS.zip ModelChange.app

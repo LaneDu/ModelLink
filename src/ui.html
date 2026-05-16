@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ModelChange</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <script>
@@ -17,93 +17,276 @@
 </script>
 <style type="text/tailwindcss">
 @theme {
-  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  --color-claude: #D97757;
-  --color-claude-hover: #c4684a;
-  --color-claude-muted: #D9775720;
-  --color-leaf: #4db8a0;
-  --color-slate-blue: #6a9bcc;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-brand: #D97757;
+  --color-brand-hover: #c4684a;
+  --color-brand-muted: #D9775718;
+  --color-brand-border: #D9775730;
+  --color-accent: #4db8a0;
+  --color-slate: #6a9bcc;
 }
 </style>
 <style>
 [data-theme="dark"] {
-  --color-primary: #D97757;
-  --color-accent: #4db8a0;
-  --color-secondary: #6a9bcc;
+  --bg-primary: #13161b;
+  --bg-secondary: #1a1e25;
+  --bg-tertiary: #222831;
+  --bg-elevated: #252b35;
+  --text-primary: #f0f2f5;
+  --text-secondary: #9aa3b2;
+  --text-tertiary: #5e6a7a;
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-medium: rgba(255,255,255,0.10);
+  --glow-brand: rgba(217,119,87,0.12);
 }
 [data-theme="light"] {
-  --color-primary: #D97757;
-  --color-accent: #3da890;
-  --color-secondary: #5a89b8;
+  --bg-primary: #f7f8fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f1f4;
+  --bg-elevated: #ffffff;
+  --text-primary: #1a1d23;
+  --text-secondary: #5e6673;
+  --text-tertiary: #9aa3b2;
+  --border-subtle: rgba(0,0,0,0.05);
+  --border-medium: rgba(0,0,0,0.08);
+  --glow-brand: rgba(217,119,87,0.08);
 }
-* { font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif; }
-body { min-height: 100vh; overflow-y: scroll; scrollbar-gutter: stable; padding-bottom: 100px; }
-[data-theme="dark"] { --action-bar-bg: 29,35,42; }
-[data-theme="light"] { --action-bar-bg: 250,249,245; }
+
+* { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+body {
+  min-height: 100vh;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  padding-bottom: 100px;
+  background: var(--bg-primary);
+}
+
+/* Subtle ambient background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, var(--glow-brand), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(77,184,160,0.04), transparent);
+}
 
 /* Loading */
-#loading { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition:opacity .4s ease; }
-[data-theme="dark"] #loading { background:#1d232a; }
-[data-theme="light"] #loading { background:#faf9f5; }
-#loading.hide { opacity:0; pointer-events:none; }
-#loading .mark { width:48px; height:48px; border-radius:50%; background:#D97757; animation:pulse-mark 1.6s ease-in-out infinite; }
-#loading .tip { font-size:13px; margin-top:20px; letter-spacing:0.02em; }
-[data-theme="dark"] #loading .tip { color:#9ca3af; }
-[data-theme="light"] #loading .tip { color:#6b7280; }
-@keyframes pulse-mark { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.15);opacity:.7} }
+#loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity .5s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"] #loading { background: var(--bg-primary); }
+[data-theme="light"] #loading { background: var(--bg-primary); }
+#loading.hide { opacity: 0; pointer-events: none; }
+#loading .mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #D97757, #e89a7a);
+  animation: pulse-mark 2s cubic-bezier(.4,0,.6,1) infinite;
+  box-shadow: 0 8px 32px rgba(217,119,87,0.3);
+}
+#loading .tip {
+  font-size: 13px;
+  margin-top: 20px;
+  letter-spacing: 0.01em;
+  color: var(--text-tertiary);
+  font-weight: 450;
+}
+@keyframes pulse-mark {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.1) rotate(4deg); opacity: .75; }
+}
 
-/* Transitions */
-.page-transition { transition: opacity .2s ease, transform .2s ease; }
-.page-enter { opacity:0; transform:translateY(8px); }
+/* Page transitions */
+.page-transition { transition: opacity .25s ease, transform .25s cubic-bezier(.4,0,.2,1); }
+.page-enter { opacity: 0; transform: translateY(12px); }
+
+/* Logo */
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #D97757, #4db8a0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(217,119,87,0.25);
+}
+.brand-logo svg { width: 18px; height: 18px; }
 
 /* Cards */
-.provider-card { transition: box-shadow .25s ease, border-color .25s ease, transform .2s ease; border-radius: 16px; }
-[data-theme="dark"] .provider-card { border:1px solid rgba(255,255,255,.06); box-shadow: 0 2px 8px rgba(0,0,0,.15); }
-[data-theme="light"] .provider-card { border:1px solid rgba(0,0,0,.06); box-shadow: 0 2px 8px rgba(0,0,0,.04); }
-.provider-card:hover { border-color: #D9775740; box-shadow: 0 4px 16px rgba(217,119,87,.12); transform: translateY(-1px); }
+.provider-card {
+  transition: all .25s cubic-bezier(.4,0,.2,1);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.provider-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(180deg, #D97757, #4db8a0);
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.provider-card:hover::before { opacity: 1; }
+[data-theme="dark"] .provider-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 0 0 1px rgba(255,255,255,.02);
+}
+[data-theme="light"] .provider-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 0 0 1px rgba(0,0,0,.02);
+}
+.provider-card:hover {
+  border-color: var(--brand-border);
+  box-shadow: 0 8px 32px var(--glow-brand), 0 0 0 1px var(--brand-border);
+  transform: translateY(-2px);
+}
+
+/* Inputs */
+.input {
+  transition: all .2s ease;
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-subtle) !important;
+}
+.input:focus {
+  border-color: var(--brand-border) !important;
+  box-shadow: 0 0 0 3px var(--brand-muted) !important;
+}
 
 /* Buttons */
-.btn { transition: all .15s ease; }
+.btn { transition: all .15s ease; font-weight: 500; }
 .btn:active:not(:disabled) { transform: scale(0.97); }
 
-/* Model row */
-
 /* Empty state */
-.empty-state { display:flex; flex-direction:column; align-items:center; padding:4rem 1rem; }
-.empty-dot { width:64px; height:64px; border-radius:50%; background:var(--color-claude-muted); display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; transition: transform .3s ease; }
-.empty-state:hover .empty-dot { transform: scale(1.05); }
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 1rem;
+}
+.empty-dot {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--brand-muted), rgba(77,184,160,0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+}
+.empty-state:hover .empty-dot { transform: scale(1.08) rotate(-4deg); }
 
-/* Log entry */
-.log-row { padding: 4px 0; border-bottom: 1px solid rgba(128,128,128,.08); }
-.log-row:last-child { border-bottom:none; }
-
-/* Settings row */
-.setting-row { display:flex; align-items:center; justify-content:space-between; padding: 14px 0; }
-.setting-row + .setting-row { border-top: 1px solid rgba(128,128,128,.1); }
+/* Settings */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+.setting-row + .setting-row {
+  border-top: 1px solid var(--border-subtle);
+}
 
 /* Scrollbar */
-::-webkit-scrollbar { width:6px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:rgba(128,128,128,.2); border-radius:3px; }
-::-webkit-scrollbar-thumb:hover { background:rgba(128,128,128,.35); }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(128,128,128,.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(128,128,128,.3); }
 
 /* Toast */
-#toast-container { position:fixed; top:16px; right:16px; z-index:9000; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
-.toast-item { pointer-events:auto; display:flex; align-items:center; gap:10px; padding:12px 18px; border-radius:12px; font-size:14px; font-weight:500; max-width:360px; animation: toast-in .25s ease; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast-item {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  max-width: 380px;
+  animation: toast-in .3s cubic-bezier(.4,0,.2,1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
 .toast-item.removing { animation: toast-out .2s ease forwards; }
-.toast-success { background:rgba(120,140,93,.15); border:1px solid rgba(120,140,93,.3); color:#4db8a0; }
-.toast-error { background:rgba(238,85,85,.12); border:1px solid rgba(238,85,85,.25); color:#e55; }
-.toast-warning { background:rgba(212,168,67,.12); border:1px solid rgba(212,168,67,.25); color:#d4a843; }
-.toast-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
-.toast-success .toast-dot { background:#4db8a0; }
-.toast-error .toast-dot { background:#e55; }
-.toast-warning .toast-dot { background:#d4a843; }
-@keyframes toast-in { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
-@keyframes toast-out { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(20px); } }
+.toast-success { background: rgba(77,184,160,.12); border: 1px solid rgba(77,184,160,.25); color: #4db8a0; }
+.toast-error { background: rgba(238,85,85,.10); border: 1px solid rgba(238,85,85,.2); color: #e55; }
+.toast-warning { background: rgba(212,168,67,.10); border: 1px solid rgba(212,168,67,.2); color: #d4a843; }
+.toast-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.toast-success .toast-dot { background: #4db8a0; }
+.toast-error .toast-dot { background: #e55; }
+.toast-warning .toast-dot { background: #d4a843; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-12px) scale(.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes toast-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(20px); } }
 
+/* Action bar */
+#action-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+#action-bar > div {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px;
+  pointer-events: auto;
+}
+#action-bar .bar-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.2), 0 0 0 1px var(--border-subtle);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+}
+[data-theme="dark"] #action-bar .bar-inner {
+  background: rgba(26,30,37,0.85);
+}
+[data-theme="light"] #action-bar .bar-inner {
+  background: rgba(255,255,255,0.82);
+}
+
+/* Status indicator */
+.status-dot {
+  box-shadow: 0 0 8px currentColor;
+}
 </style>
 </head>
-<body class="p-6">
+<body class="p-6 relative">
 
 <div id="loading">
   <div class="mark"></div>
@@ -111,28 +294,37 @@ body { min-height: 100vh; overflow-y: scroll; scrollbar-gutter: stable; padding-
 </div>
 <div id="toast-container"></div>
 
-<div class="max-w-2xl mx-auto" style="opacity:0" id="app-root">
+<div class="max-w-2xl mx-auto relative z-10" style="opacity:0" id="app-root">
 
   <!-- Header: Main -->
-  <div class="flex items-center justify-between mb-6" id="header-main">
-    <div class="flex items-center gap-3">
-      <h1 class="text-xl font-semibold tracking-tight">ModelChange</h1>
-      <span class="inline-flex items-center gap-1.5 text-sm font-medium px-2.5 py-0.5 rounded-full" style="background:var(--color-claude-muted);color:#D97757;">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#D97757] animate-pulse"></span>
-        运行中
-      </span>
+  <div class="flex items-center justify-between mb-8" id="header-main">
+    <div class="flex items-center gap-3.5">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-semibold tracking-tight leading-none" style="color: var(--text-primary);">ModelChange</h1>
+        <div class="flex items-center gap-1.5 mt-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#4db8a0] status-dot animate-pulse"></span>
+          <span class="text-[11px] font-medium" style="color: var(--text-tertiary);">运行中</span>
+        </div>
+      </div>
     </div>
-    <button class="btn btn-ghost btn-sm btn-circle opacity-60 hover:opacity-100 transition-opacity" onclick="switchPage()" title="设置">
+    <button class="btn btn-ghost btn-sm btn-circle opacity-50 hover:opacity-100 transition-opacity" onclick="switchPage()" title="设置">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
   </div>
 
   <!-- Header: Settings -->
-  <div class="flex items-center gap-3 mb-6 hidden" id="header-settings">
-    <button class="btn btn-ghost btn-sm btn-circle opacity-60 hover:opacity-100 transition-opacity" onclick="switchPage()" title="返回">
+  <div class="flex items-center gap-3 mb-8 hidden" id="header-settings">
+    <button class="btn btn-ghost btn-sm btn-circle opacity-50 hover:opacity-100 transition-opacity" onclick="switchPage()" title="返回">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
-    <h1 class="text-xl font-semibold tracking-tight">设置</h1>
+    <h1 class="text-lg font-semibold tracking-tight" style="color: var(--text-primary);">设置</h1>
   </div>
 
   <!-- Main Page -->
@@ -141,13 +333,13 @@ body { min-height: 100vh; overflow-y: scroll; scrollbar-gutter: stable; padding-
 
     <div id="empty-state" class="empty-state" style="display:none">
       <div class="empty-dot">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D97757" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
       </div>
-      <div class="text-sm font-medium mb-1">尚未配置服务商</div>
-      <div class="text-xs opacity-50 mb-4">添加一个 API 服务商开始使用</div>
+      <div class="text-sm font-semibold mb-1" style="color: var(--text-primary);">尚未配置服务商</div>
+      <div class="text-xs mb-5" style="color: var(--text-tertiary);">添加一个 API 服务商开始使用</div>
     </div>
 
-    <button class="btn btn-ghost btn-sm btn-block border-dashed border-base-content/15 mb-5 hover:border-[#D97757] hover:text-[#D97757] transition-colors" onclick="addProvider()">
+    <button class="btn btn-ghost btn-sm btn-block border-dashed border-base-content/10 mb-6 hover:border-[#D97757] hover:text-[#D97757] transition-colors rounded-xl h-11" style="color: var(--text-tertiary);" onclick="addProvider()">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
       添加服务商
     </button>
@@ -156,12 +348,12 @@ body { min-height: 100vh; overflow-y: scroll; scrollbar-gutter: stable; padding-
 
   <!-- Settings Page -->
   <div id="page-settings" class="hidden page-transition">
-    <div class="card bg-base-200 mb-4 provider-card">
+    <div class="card mb-4 provider-card" style="background: var(--bg-secondary);">
       <div class="card-body p-5">
         <div class="setting-row" style="padding-top:0">
           <div>
-            <div class="text-base font-medium">外观</div>
-            <div class="text-xs opacity-50 mt-0.5">切换颜色模式</div>
+            <div class="text-sm font-semibold" style="color: var(--text-primary);">外观</div>
+            <div class="text-xs mt-0.5" style="color: var(--text-tertiary);">切换颜色模式</div>
           </div>
           <div class="join">
             <button class="btn btn-xs join-item theme-btn" data-val="light" onclick="setTheme('light')">亮色</button>
@@ -171,35 +363,33 @@ body { min-height: 100vh; overflow-y: scroll; scrollbar-gutter: stable; padding-
         </div>
         <div class="setting-row" style="padding-bottom:0">
           <div>
-            <div class="text-base font-medium">开机自启</div>
-            <div class="text-xs opacity-50 mt-0.5">登录时自动启动代理</div>
+            <div class="text-sm font-semibold" style="color: var(--text-primary);">开机自启</div>
+            <div class="text-xs mt-0.5" style="color: var(--text-tertiary);">登录时自动启动代理</div>
           </div>
           <input type="checkbox" class="toggle toggle-sm toggle-accent" id="autostart-toggle" onchange="toggleAutostart(this.checked)">
         </div>
       </div>
     </div>
 
-    <div class="card bg-base-200 provider-card">
+    <div class="card provider-card" style="background: var(--bg-secondary);">
       <div class="card-body p-5">
-        <div class="flex items-center justify-between mb-3">
-          <div class="text-base font-medium">请求日志</div>
-          <button class="btn btn-xs btn-ghost opacity-60 hover:opacity-100" onclick="loadLogs()">刷新</button>
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-sm font-semibold" style="color: var(--text-primary);">请求日志</div>
+          <button class="btn btn-xs btn-ghost opacity-50 hover:opacity-100" onclick="loadLogs()">刷新</button>
         </div>
-        <div id="logs-area" class="bg-base-300/50 rounded-xl p-3 h-64 overflow-y-auto text-xs font-mono">
-          <div class="flex items-center justify-center h-full opacity-40">暂无记录</div>
+        <div id="logs-area" class="rounded-xl p-3 h-64 overflow-y-auto text-xs font-mono" style="background: var(--bg-tertiary); color: var(--text-secondary);">
+          <div class="flex items-center justify-center h-full" style="color: var(--text-tertiary);">暂无记录</div>
         </div>
       </div>
     </div>
-
-
   </div>
 </div>
 
-<div id="action-bar" class="fixed bottom-5 left-0 right-0 z-50 pointer-events-none" style="display:none">
-  <div class="max-w-2xl mx-auto px-6 pb-3 pointer-events-auto">
-    <div class="grid grid-cols-2 gap-3 p-3 rounded-2xl shadow-lg backdrop-blur-lg" style="background:rgba(var(--action-bar-bg),0.85);border:1px solid rgba(128,128,128,0.12)">
-      <button class="btn btn-neutral h-11 text-sm" onclick="saveConfig()">保存配置</button>
-      <button class="btn h-11 text-sm text-white" style="background:#D97757;border:none" onmouseover="this.style.background='#c4684a'" onmouseout="this.style.background='#D97757'" onclick="applyToClaude()">应用到 Claude Desktop</button>
+<div id="action-bar" style="display:none">
+  <div>
+    <div class="bar-inner">
+      <button class="btn btn-neutral h-11 text-sm font-medium rounded-xl" style="background: var(--bg-tertiary); border: 1px solid var(--border-subtle); color: var(--text-secondary);" onclick="saveConfig()">保存配置</button>
+      <button class="btn h-11 text-sm text-white font-medium rounded-xl" style="background: linear-gradient(135deg, #D97757, #c4684a); border: none; box-shadow: 0 4px 16px rgba(217,119,87,0.3);" onmouseover="this.style.background='linear-gradient(135deg, #c4684a, #b05a3e)'" onmouseout="this.style.background='linear-gradient(135deg, #D97757, #c4684a)'" onclick="applyToClaude()">应用到 Claude Desktop</button>
     </div>
   </div>
 </div>
@@ -316,7 +506,8 @@ function render() {
 
   cfg.providers.forEach((p, pi) => {
     const card = document.createElement('div');
-    card.className = 'card bg-base-200 provider-card';
+    card.className = 'card provider-card';
+    card.style.cssText = 'background: var(--bg-secondary);';
     const presetModels = getPresetModels(p.target_url);
     const gBase = globalModelStart(pi);
     let modelsHtml = '';
@@ -350,7 +541,7 @@ function render() {
     card.innerHTML = `
       <div class="card-body p-4 gap-3">
         <div class="flex items-center gap-2">
-          <h3 class="text-sm font-semibold flex-1">${providerTag || '服务商 '+(pi+1)}</h3>
+          <h3 class="text-sm font-semibold flex-1" style="color: var(--text-primary);">${providerTag || '服务商 '+(pi+1)}</h3>
           <select class="select select-bordered select-xs w-28" onchange="cfg.providers[${pi}].thinking_effort=this.value" title="推理强度">${thinkOpts}</select>
           <button class="btn btn-ghost btn-xs opacity-30 hover:opacity-100 hover:text-error" onclick="delProvider(${pi})" title="删除">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
@@ -365,15 +556,15 @@ function render() {
         </div>
         <div class="flex flex-col gap-1">
           <div class="flex items-center justify-between">
-            <span class="text-xs opacity-40">模型</span>
-            <button class="btn btn-xs btn-ghost text-slate-blue opacity-60 hover:opacity-100" onclick="testProvider(${pi})" id="test-btn-${pi}">
+            <span class="text-xs font-medium" style="color: var(--text-tertiary);">模型</span>
+            <button class="btn btn-xs btn-ghost opacity-60 hover:opacity-100" style="color: var(--color-slate);" onclick="testProvider(${pi})" id="test-btn-${pi}">
               <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               测试连接
             </button>
           </div>
           <div id="test-result-${pi}" class="text-xs hidden"></div>
           ${modelsHtml}
-          <button class="btn btn-ghost btn-xs border-dashed border-base-content/10 opacity-40 hover:opacity-80 hover:border-[#D97757] hover:text-[#D97757]" onclick="addModel(${pi})">+ 添加模型</button>
+          <button class="btn btn-ghost btn-xs border-dashed border-base-content/10 opacity-40 hover:opacity-80 hover:border-[#D97757] hover:text-[#D97757] mt-1" onclick="addModel(${pi})">+ 添加模型</button>
         </div>
       </div>`;
     el.appendChild(card);
@@ -389,23 +580,23 @@ function showPresetPicker() {
   if (existing) existing.remove();
   const modal = document.createElement('div');
   modal.id = 'preset-modal';
-  modal.style.cssText = 'position:fixed;inset:0;z-index:8000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);animation:toast-in .15s ease';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:8000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);animation:toast-in .15s ease';
   const presetButtons = PRESETS.map(p =>
     `<button class="btn btn-ghost justify-start gap-3 h-14 text-base" onclick="applyPreset('${p.id}')">
-      <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:var(--color-claude-muted);color:#D97757">${p.name[0]}</span>
-      <div class="text-left min-w-0 flex-1"><div class="font-medium">${p.name}</div><div class="text-xs opacity-50 truncate">${p.url}</div></div>
+      <span class="w-9 h-9 rounded-[10px] flex items-center justify-center text-sm font-bold" style="background:linear-gradient(135deg,#D9775720,#4db8a020);color:#D97757">${p.name[0]}</span>
+      <div class="text-left min-w-0 flex-1"><div class="font-medium text-sm">${p.name}</div><div class="text-xs opacity-40 truncate">${p.url}</div></div>
     </button>`
   ).join('');
   modal.innerHTML = `
-    <div class="card bg-base-200 w-96 shadow-2xl" style="border:1px solid rgba(255,255,255,.08);max-height:80vh;display:flex;flex-direction:column">
+    <div class="card w-96 shadow-2xl" style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 20px; max-height: 80vh; display: flex; flex-direction: column;">
       <div class="card-body p-5 flex flex-col min-h-0">
-        <h3 class="text-base font-semibold mb-3 flex-shrink-0">选择服务商</h3>
+        <h3 class="text-base font-semibold mb-3 flex-shrink-0" style="color: var(--text-primary);">选择服务商</h3>
         <div class="flex flex-col gap-1 overflow-y-auto overflow-x-hidden min-h-0 flex-1" style="-webkit-overflow-scrolling:touch">
           ${presetButtons}
-          <div class="divider my-1 opacity-30"></div>
+          <div class="divider my-1 opacity-20"></div>
           <button class="btn btn-ghost justify-start gap-3 h-12 flex-shrink-0" onclick="applyPreset('custom')">
-            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm opacity-40" style="background:rgba(128,128,128,.15)">?</span>
-            <div class="text-left"><div class="font-medium">自定义</div><div class="text-xs opacity-50">手动填写 API 地址和模型</div></div>
+            <span class="w-9 h-9 rounded-[10px] flex items-center justify-center text-sm opacity-40" style="background: var(--bg-tertiary);">?</span>
+            <div class="text-left"><div class="font-medium text-sm">自定义</div><div class="text-xs opacity-40">手动填写 API 地址和模型</div></div>
           </button>
         </div>
         <button class="btn btn-ghost btn-sm mt-2 opacity-50 flex-shrink-0" onclick="document.getElementById('preset-modal').remove();document.body.style.overflow=''">取消</button>
@@ -588,20 +779,20 @@ async function toggleAutostart(enabled) {
 
 async function loadLogs() {
   const el = document.getElementById('logs-area');
-  el.innerHTML = '<div class="flex items-center justify-center h-full opacity-40">加载中...</div>';
+  el.innerHTML = '<div class="flex items-center justify-center h-full" style="color: var(--text-tertiary);">加载中...</div>';
   try {
     const r = await fetch('/api/logs');
     const logs = await r.json();
     if (!logs.length) {
-      el.innerHTML = '<div class="flex items-center justify-center h-full opacity-40">暂无记录</div>';
+      el.innerHTML = '<div class="flex items-center justify-center h-full" style="color: var(--text-tertiary);">暂无记录</div>';
       return;
     }
     const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     el.innerHTML = logs.slice(-50).reverse().map(l => {
       const ok = l.status === 200;
-      const thinkTag = l.thinking === 'off' ? '<span class="opacity-50 text-warning flex-shrink-0">思考关</span>'
-        : l.thinking === 'high' ? '<span class="opacity-60 text-info flex-shrink-0">标准</span>'
-        : l.thinking === 'max' ? '<span class="opacity-60 text-info flex-shrink-0">深度</span>'
+      const thinkTag = l.thinking === 'off' ? '<span class="opacity-50 flex-shrink-0" style="color: #d4a843;">思考关</span>'
+        : l.thinking === 'high' ? '<span class="opacity-60 flex-shrink-0" style="color: var(--color-slate);">标准</span>'
+        : l.thinking === 'max' ? '<span class="opacity-60 flex-shrink-0" style="color: var(--color-slate);">深度</span>'
         : '';
       return `<div class="log-row flex items-center gap-2">
         <span class="text-[10px] opacity-40 flex-shrink-0 w-[52px]">${l.time}</span>
@@ -612,7 +803,7 @@ async function loadLogs() {
       </div>`;
     }).join('');
   } catch(e) {
-    el.innerHTML = '<div class="flex items-center justify-center h-full opacity-40 text-error">加载失败</div>';
+    el.innerHTML = '<div class="flex items-center justify-center h-full text-error">加载失败</div>';
   }
 }
 
